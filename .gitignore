@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# SQLite Database
+prakrit_system.db
+
+# Streamlit
+.streamlit/

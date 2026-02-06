@@ -1,0 +1,13 @@
+import pathway as pw
+
+# A simpler, more reliable way to create a test table
+data = [
+    {"message": "Hello Prakrit!"},
+    {"message": "Pathway Engine is Live"},
+    {"message": "D-Drive setup successful"}
+]
+
+table = pw.debug.table_from_data(data)
+
+# This will print the table to your terminal
+pw.debug.compute_and_print(table)
