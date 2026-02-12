@@ -1,52 +1,71 @@
 import streamlit as st
+import google.generativeai as genai
+from datetime import datetime
 from components.ui_elements import PrakritUI
-from streamlit_lottie import st_lottie
+import os
 
-st.title("🛡️ AI Verification Authority")
-
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 cursor = db.cursor()
-lottie_scan = PrakritUI.load_lottie("https://lottie.host/7e00845a-6058-4505-8704-8742d4a205a2/Fis7I6P1U6.json")
 
-col1, col2 = st.columns([1.5, 1])
-with col1:
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.subheader("Data Uplink Stream")
+st.title("🛡️ NGO Verification Portal")
 
-    # 1. Fetch organizers to audit
-    cursor.execute("SELECT username, company FROM users WHERE role = 'Event Organizer'")
-    orgs = cursor.fetchall()
-    org_list = {f"{o[1]} (@{o[0]})": o[0] for o in orgs}
+tab_cl, tab_aud = st.tabs(["📋 Active Stream", "✅ Audit History"])
 
-    selected_label = st.selectbox("Select Organizer to Audit",
-                                  list(org_list.keys()) if org_list else ["No Organizers Found"])
+with tab_cl:
+    st.subheader("Bookings Requiring Verification")
+    # Fetch Paid & Confirmed bookings not yet audited
+    cursor.execute("""SELECT * FROM bookings WHERE status = 'Paid & Confirmed' 
+                      AND (audit_status IS NULL OR audit_status = '')""")
+    active = cursor.fetchall()
 
-    report = st.file_uploader("Upload Sustainability Proof", type=['txt', 'pdf'])
+    for b in active:
+        with st.expander(f"Audit Order {b[1]} - {b[3]}"):
+            st.write(f"**Event Details:** {b[6]}")
+            if st.button(f"Claim Audit for {b[1]}", key=f"cl_{b[1]}"):
+                cursor.execute("UPDATE bookings SET audit_status = 'Claimed', auditor_name = ? WHERE booking_id = ?",
+                               (u['username'], b[1]))
+                db.commit(); st.rerun()
 
-    if st.button("🚀 Execute AI Audit"):
-        if report and org_list:
-            # Simulate AI analysis and update SQLite database
-            target_username = org_list[selected_label]
-            cursor.execute("UPDATE users SET audited = 1, score = 9.8 WHERE username = ?", (target_username,))
-            db.commit()
-            st.success(f"Audit Complete! {selected_label} score updated to 9.8.")
-        else:
-            st.warning("Please upload a file and select a valid organizer.")
-    st.markdown('</div>', unsafe_allow_html=True)
+# --- Audit Execution Section ---
+st.divider()
+cursor.execute("SELECT * FROM bookings WHERE auditor_name = ? AND audit_status = 'Claimed'", (u['username'],))
+claims = cursor.fetchall()
 
-with col2:
-    if lottie_scan:
-        st_lottie(lottie_scan, height=250)
+if claims:
+    st.subheader("🚀 Execute AI Audit")
+    sel_b = st.selectbox("Select Booking to Audit", [c[1] for c in claims])
+    pdf_report = st.file_uploader(f"Upload Audit PDF for {sel_b}", type=['pdf'])
 
-# Real-time Audit Log from SQLite
-st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-st.write("### 📈 Verified Partners Feed")
-cursor.execute("SELECT company, score, location FROM users WHERE audited = 1")
-audited_df = cursor.fetchall()
-if audited_df:
-    import pandas as pd
+    if st.button("Submit to Gemini AI"):
+        if pdf_report:
+            with st.spinner("Gemini AI Analyzing Geolocation & Proofs..."):
+                try:
+                    model = genai.GenerativeModel('gemini-1.5-flash')
+                    prompt = "Analyze this sustainability audit report. Provide a score from 1.0 to 10.0. Return ONLY the number."
+                    pdf_data = pdf_report.read()
+                    response = model.generate_content([prompt, {"mime_type": "application/pdf", "data": pdf_data}])
 
-    df = pd.DataFrame(audited_df, columns=["Company", "AI Score", "Location"])
-    st.dataframe(df, use_container_width=True)
-else:
-    st.write("System status: Idle. Awaiting audit execution.")
-st.markdown('</div>', unsafe_allow_html=True)
+                    score = float(response.text.strip())
+                    is_eco = score >= 7.5
+                    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+                    # Update Booking & Status
+                    cursor.execute("""UPDATE bookings SET audit_score = ?, audit_status = 'Verified', 
+                                      status = ? WHERE booking_id = ?""",
+                                   (score, 'Verified Eco-Friendly' if is_eco else 'Audit Failed', sel_b))
+
+                    if is_eco:
+                        # 1. Credit Organizer +100 Mudra
+                        cursor.execute("SELECT organizer FROM bookings WHERE booking_id = ?", (sel_b,))
+                        org_user = cursor.fetchone()[0]
+                        cursor.execute("UPDATE users SET wallet = wallet + 100 WHERE username = ?", (org_user,))
+                        cursor.execute("INSERT INTO transactions (username, amount, type, reason, timestamp) VALUES (?,?,?,?,?)",
+                                       (org_user, 100, "Credit", f"Verified Audit: {sel_b}", now))
+
+                        # 2. Update Organizer Average Score
+                        cursor.execute("SELECT AVG(audit_score) FROM bookings WHERE organizer = ?", (org_user,))
+                        avg_s = cursor.fetchone()[0]
+                        cursor.execute("UPDATE users SET score = ?, audited = 1 WHERE username = ?", (round(avg_s, 1), org_user))
+
+                    db.commit(); st.success(f"Audit Complete! Score: {score}"); st.rerun()
+                except Exception as e: st.error(f"AI Failure: {e}")
