@@ -4,7 +4,9 @@ __pycache__/
 *$py.class
 venv/
 .env
-
+*.db
+data/live_pulse.jsonl
+data/pathway_results.csv
 # SQLite Database
 prakrit_system.db
 

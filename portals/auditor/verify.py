@@ -1,71 +1,111 @@
 import streamlit as st
-import google.generativeai as genai
+import os
+import pandas as pd
 from datetime import datetime
 from components.ui_elements import PrakritUI
-import os
 
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+# Establish connection
 cursor = db.cursor()
 
-st.title("🛡️ NGO Verification Portal")
+st.title("🛡️ NGO Real-Time Verification Portal")
 
 tab_cl, tab_aud = st.tabs(["📋 Active Stream", "✅ Audit History"])
 
 with tab_cl:
     st.subheader("Bookings Requiring Verification")
     # Fetch Paid & Confirmed bookings not yet audited
-    cursor.execute("""SELECT * FROM bookings WHERE status = 'Paid & Confirmed' 
-                      AND (audit_status IS NULL OR audit_status = '')""")
+    cursor.execute("""SELECT *
+                      FROM bookings
+                      WHERE status = 'Paid & Confirmed'
+                        AND (audit_status IS NULL OR audit_status = '')""")
     active = cursor.fetchall()
 
-    for b in active:
-        with st.expander(f"Audit Order {b[1]} - {b[3]}"):
-            st.write(f"**Event Details:** {b[6]}")
-            if st.button(f"Claim Audit for {b[1]}", key=f"cl_{b[1]}"):
-                cursor.execute("UPDATE bookings SET audit_status = 'Claimed', auditor_name = ? WHERE booking_id = ?",
-                               (u['username'], b[1]))
-                db.commit(); st.rerun()
+    if active:
+        for b in active:
+            with st.expander(f"Audit Order {b[1]} - {b[3]}"):
+                st.write(f"**Event Details:** {b[6]}")
+                if st.button(f"Claim Audit for {b[1]}", key=f"cl_{b[1]}"):
+                    cursor.execute(
+                        "UPDATE bookings SET audit_status = 'Claimed', auditor_name = ? WHERE booking_id = ?",
+                        (u['username'], b[1]))
+                    db.commit()
+                    st.rerun()
+    else:
+        st.info("No active bookings waiting for verification.")
 
-# --- Audit Execution Section ---
+# --- SECTION 2: PATHWAY DATA INGESTION ---
 st.divider()
 cursor.execute("SELECT * FROM bookings WHERE auditor_name = ? AND audit_status = 'Claimed'", (u['username'],))
 claims = cursor.fetchall()
 
 if claims:
-    st.subheader("🚀 Execute AI Audit")
+    st.subheader("🚀 Deploy to Pathway Engine")
     sel_b = st.selectbox("Select Booking to Audit", [c[1] for c in claims])
-    pdf_report = st.file_uploader(f"Upload Audit PDF for {sel_b}", type=['pdf'])
+    report = st.file_uploader(f"Upload Sustainability Proof for {sel_b}", type=['txt', 'pdf'])
 
-    if st.button("Submit to Gemini AI"):
-        if pdf_report:
-            with st.spinner("Gemini AI Analyzing Geolocation & Proofs..."):
-                try:
-                    model = genai.GenerativeModel('gemini-1.5-flash')
-                    prompt = "Analyze this sustainability audit report. Provide a score from 1.0 to 10.0. Return ONLY the number."
-                    pdf_data = pdf_report.read()
-                    response = model.generate_content([prompt, {"mime_type": "application/pdf", "data": pdf_data}])
+    if st.button("Trigger Live Pathway Audit"):
+        if report:
+            # Save file to the 'Hot Folder' Pathway is watching (main.py)
+            # We rename the file with the booking ID so Pathway results can be mapped back
+            save_path = f"data/input/{sel_b}_report.txt"
+            with open(save_path, "wb") as f:
+                f.write(report.getbuffer())
 
-                    score = float(response.text.strip())
-                    is_eco = score >= 7.5
-                    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+            # Update local status to reflect it's being processed
+            cursor.execute("UPDATE bookings SET audit_status = 'In Pathway Stream' WHERE booking_id = ?", (sel_b,))
+            db.commit()
+            st.success(f"Audit {sel_b} is now being processed by the Pathway LiveAI engine!")
+            st.rerun()
+        else:
+            st.warning("Please upload a report file to begin.")
 
-                    # Update Booking & Status
-                    cursor.execute("""UPDATE bookings SET audit_score = ?, audit_status = 'Verified', 
-                                      status = ? WHERE booking_id = ?""",
-                                   (score, 'Verified Eco-Friendly' if is_eco else 'Audit Failed', sel_b))
+# --- SECTION 3: LIVE FEED FROM PATHWAY ---
+st.subheader("📈 Live Pathway Analysis Feed")
+results_path = "data/pathway_results.csv"
 
-                    if is_eco:
-                        # 1. Credit Organizer +100 Mudra
-                        cursor.execute("SELECT organizer FROM bookings WHERE booking_id = ?", (sel_b,))
-                        org_user = cursor.fetchone()[0]
-                        cursor.execute("UPDATE users SET wallet = wallet + 100 WHERE username = ?", (org_user,))
-                        cursor.execute("INSERT INTO transactions (username, amount, type, reason, timestamp) VALUES (?,?,?,?,?)",
-                                       (org_user, 100, "Credit", f"Verified Audit: {sel_b}", now))
+if os.path.exists(results_path):
+    # Pathway writes results here in real-time
+    pathway_df = pd.read_csv(results_path)
+    st.dataframe(pathway_df, use_container_width=True)
 
-                        # 2. Update Organizer Average Score
-                        cursor.execute("SELECT AVG(audit_score) FROM bookings WHERE organizer = ?", (org_user,))
-                        avg_s = cursor.fetchone()[0]
-                        cursor.execute("UPDATE users SET score = ?, audited = 1 WHERE username = ?", (round(avg_s, 1), org_user))
+    if st.button("🔄 Sync Pathway Scores to Ecosystem"):
+        for _, row in pathway_df.iterrows():
+            # Extract booking ID from filename (e.g., data/input/B123_report.txt -> B123)
+            filename = os.path.basename(row['filename'])
+            b_id = filename.split("_")[0]
+            ai_score = float(row['ai_score'])
 
-                    db.commit(); st.success(f"Audit Complete! Score: {score}"); st.rerun()
-                except Exception as e: st.error(f"AI Failure: {e}")
+            # Update SQLite with results generated by Pathway
+            is_eco = ai_score >= 7.5
+            now = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+            # 1. Update Booking
+            cursor.execute("""UPDATE bookings
+                              SET audit_score  = ?,
+                                  audit_status = 'Verified',
+                                  status       = ?
+                              WHERE booking_id = ?""",
+                           (ai_score, 'Verified Eco-Friendly' if is_eco else 'Audit Failed', b_id))
+
+            if is_eco:
+                # 2. Credit Organizer +100 Mudra (using data from the booking)
+                cursor.execute("SELECT organizer FROM bookings WHERE booking_id = ?", (b_id,))
+                org_row = cursor.fetchone()
+                if org_row:
+                    org_user = org_row[0]
+                    cursor.execute("UPDATE users SET wallet = wallet + 100 WHERE username = ?", (org_user,))
+                    cursor.execute(
+                        "INSERT INTO transactions (username, amount, type, reason, timestamp) VALUES (?,?,?,?,?)",
+                        (org_user, 100, "Credit", f"Verified Audit: {b_id}", now))
+
+                    # 3. Update Organizer Average Score
+                    cursor.execute("SELECT AVG(audit_score) FROM bookings WHERE organizer = ?", (org_user,))
+                    avg_s = cursor.fetchone()[0]
+                    cursor.execute("UPDATE users SET score = ?, audited = 1 WHERE username = ?",
+                                   (round(avg_s, 1), org_user))
+
+            db.commit()
+        st.success("Pathway data synced successfully!")
+        st.rerun()
+else:
+    st.info("Waiting for first live pulse from Pathway engine...")
