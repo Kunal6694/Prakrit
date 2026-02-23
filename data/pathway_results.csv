@@ -1,0 +1,3 @@
+"filename","ai_score","consultant_tip","processed_at","time","diff"
+"""data/input/FA4F1B2A_report.txt""","0.0","API ERROR: [Errno -3] Temporary failure in name resolution","1771751404","1771822624432","1"
+"""data/input/test.txt""","0.0","API ERROR: [Errno -3] Temporary failure in name resolution","1771751348","1771822624432","1"

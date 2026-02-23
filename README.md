@@ -41,6 +41,3 @@ streamlit run prakrit_app.py
 
 🛡️ Hackathon Track: Sustainability
 This project is built for the AI/Machine Learning & Sustainability track. It demonstrates how streaming ML can be used for live monitoring, eco-score optimization, and real-time fraud detection in "Green Claims."
-
-## ⚖️ License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
