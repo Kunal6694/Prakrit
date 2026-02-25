@@ -1,43 +1,72 @@
-🌿 Prakrit | AI Sustainability Ecosystem
-Prakrit is a live AI-driven protocol designed to decipher nature's integrity using real-time data processing and verified sustainability audits. Built on the Pathway framework, it bridges the gap between industrial neglect and a regenerative future through a "Cyber-Nature" digital mirror. 
+🌿 Prakrit: AI-Verified Sustainability Ecosystem
 
-🚀 The Core Vision
-In current systems, sustainability data is often stale or static. Prakrit solves this by utilizing LiveAI™ to ingest, process, and verify eco-proofs the millisecond they arrive. 
-Real-Time Ingestion: Powered by Pathway, the system monitors live streams of audit documents and transaction logs. 
-AI-Verified Integrity: Uses Gemini 2.5 Flash to perform deep-reasoning audits on sustainability reports to generate a dynamic "Eco-Index."
-Mudra Economy: A reward system that credits PrakritMudra to organizers and customers upon successful, verified green transitions.
+Deciphering Nature with AI-Verified Integrity. Built for the Hack For Green Bharat Hackathon.
+
+Prakrit is a dual-engine platform designed to eliminate "greenwashing" in the event industry. By combining Pathway’s real-time streaming engine with Google Gemini’s AI reasoning, Prakrit provides an automated, transparent, and rewarding ecosystem for organizers, customers, and auditors.
+
+✨ Key Features
+🛡️ AI-Verified Audits: Real-time sustainability proof verification using Gemini 1.5 Flash.
+
+📈 Live Pathway Ticker: A global "Eco-Pulse" that updates incrementally as new events are verified.
+
+💬 Prakrit AI Consultant: A real-time RAG (Retrieval-Augmented Generation) assistant that answers sustainability queries based on live-indexed data.
+
+🪙 PrakritMudra Economy: A digital reward system that incentivizes green choices for both customers and organizers.
+
+🆔 Prakrit ID: A unique, unified identifier for every stakeholder in the green ecosystem.
 
 🛠️ Tech Stack
+Streaming Engine: Pathway (Real-time data ingestion & RAG)
 
-Engine: Pathway (Streaming Data Processing & Live RAG) 
-AI Model: Google Gemini (Real-time Audit Analysis)
-Frontend: Streamlit (Cinematic Veridian-Mirror UI)
-Database: SQLite (User Persistence & Transaction History)
+AI Reasoning: Google Gemini 1.5 Flash (via google-generativeai)
 
-🏗️ Pathway Integration
-Prakrit strictly adheres to the Pathway Framework requirements for the "Hack For Green Bharat" hackathon: 
-Live Streaming: Ingests data using pw.io.fs.read in streaming mode to ensure zero-latency updates.
-RAG Pipeline: Maintains a live hybrid index that updates the instant a sustainability report is added to the ./data/input directory.
-Automatic Synchronization: If a report is modified or deleted, Pathway automatically synchronizes the index without manual re-ingestion. 
+Frontend: Streamlit (Cinematic "Veridian Mirror" UI)
 
-📦 Installation & Setup
-Clone the Repository
-git clone https://github.com/your-username/prakrit.git
-cd prakrit
+Database: SQLite3 (Persistent local storage)
 
-Install Dependencies
+Environment: Python 3.10+
+
+🚀 Quick Start
+To run Prakrit on your local machine, follow these steps in order.
+
+1. Clone the Repository
+Bash
+git clone https://github.com/Kunal6694/Prakrit.git
+cd Prakrit
+
+3. Setup Environment Variables
+Create a .env file in the root directory and add your Google API Key:
+
+Plaintext
+GOOGLE_API_KEY=your_gemini_api_key_here
+
+3. Install Dependencies
+Bash
 pip install -r requirements.txt
-Environment Variables
 
-Create a .env file and add your Gemini API Key:
-Code snippet
-GEMINI_API_KEY=your_api_key_here
-
-Run the Pathway Engine
+4. Launch the Pathway Engine (Backend)
+Open a terminal and run the streaming processor. This must stay running to process audits and the RAG index in real-time.
+Bash
 python main.py
+5. Launch the Prakrit App (Frontend)
 
-Launch the Ecosystem
+Open a second terminal and run the Streamlit application.
+Bash
 streamlit run prakrit_app.py
 
-🛡️ Hackathon Track: Sustainability
-This project is built for the AI/Machine Learning & Sustainability track. It demonstrates how streaming ML can be used for live monitoring, eco-score optimization, and real-time fraud detection in "Green Claims."
+🏗️ Architecture: The "One-Line Rule"
+Prakrit follows the mandatory Pathway requirement: the system updates automatically when new data arrives.
+
+Ingestion: Files (PDF/TXT) uploaded to data/input/ are detected instantly by Pathway.
+
+Reasoning: main.py uses pw.apply to score the reports and generate RAG insights via Gemini.
+
+Synchronization: Pathway sinks the results to pathway_results.csv and live_pulse.jsonl.
+
+UI Refresh: The Streamlit frontend monitors these sinks and updates the Live Ticker and Consultant Tip without requiring a page reload.
+
+⚖️ License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+🌿 Our Vision
+To move from a world of "claimed" sustainability to "verified" impact, one event at a time.
