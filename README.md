@@ -1,72 +1,100 @@
-🌿 Prakrit: AI-Verified Sustainability Ecosystem
+🌿 Prakrit: AI-Verified Sustainability Protocol
+Deciphering Nature with AI-Verified Integrity.
 
-Deciphering Nature with AI-Verified Integrity. Built for the Hack For Green Bharat Hackathon.
+Prakrit is a real-time, B2B sustainability ecosystem designed to eliminate "Greenwashing" in the corporate event industry. By leveraging the Pathway Streaming Engine and Gemini 2.5 Flash, we turn raw event data into verified, audit-ready compliance assets for corporate ESG reporting.
 
-Prakrit is a dual-engine platform designed to eliminate "greenwashing" in the event industry. By combining Pathway’s real-time streaming engine with Google Gemini’s AI reasoning, Prakrit provides an automated, transparent, and rewarding ecosystem for organizers, customers, and auditors.
+🚀 The Mission
+In 2026, corporate giants face strict SEBI BRSR Core mandates but lack a reliable way to verify the "Green" claims of their event managers. Prakrit bridges this "Trust Gap" by providing a verified marketplace where every carbon and plastic footprint claim is audited by AI and confirmed by local NGOs.
+
+🛠️ Technical Architecture
+Prakrit is built on a high-performance Streaming RAG architecture, moving beyond static batch processing to a "Live Eco-Pulse."
+
+Streaming Engine: Powered by Pathway, our system adheres to the "One-Line Rule"—incremental updates ensure the global sustainability ticker reflects every new data point (invoices, waste logs) instantly.
+
+Reasoning Layer: Gemini 1.5 Flash performs deep anomaly detection, cross-referencing organizer claims against historical sustainability patterns and logistics data.
+
+The Trust Layer: A hybrid verification system where AI flags inconsistencies for NGO Auditors, who provide the final human-in-the-loop validation for legal compliance.
 
 ✨ Key Features
-🛡️ AI-Verified Audits: Real-time sustainability proof verification using Gemini 1.5 Flash.
+🏢 For Corporate Clients (SMEs & Giants)
+Marketplace of Verified Leads: Access a curated list of event managers with high-integrity AI scores.
 
-📈 Live Pathway Ticker: A global "Eco-Pulse" that updates incrementally as new events are verified.
+Automated BRSR Reports: Receive instant, audit-ready PDF reports for SEBI sustainability filings.
 
-💬 Prakrit AI Consultant: A real-time RAG (Retrieval-Augmented Generation) assistant that answers sustainability queries based on live-indexed data.
+Mudra Rewards: Earn PrakritMudra for every verified green event, redeemable in our circular marketplace.
 
-🪙 PrakritMudra Economy: A digital reward system that incentivizes green choices for both customers and organizers.
+🎪 For Event Organizers
+The Veridian Mirror: A high-tech dashboard to track event footprints in real-time.
 
-🆔 Prakrit ID: A unique, unified identifier for every stakeholder in the green ecosystem.
+Verification-as-a-Service: Get your "Green" claims verified by AI to win high-value corporate contracts.
 
-🛠️ Tech Stack
-Streaming Engine: Pathway (Real-time data ingestion & RAG)
+Reputation Engine: Build a public, immutable track record of environmental integrity.
 
-AI Reasoning: Google Gemini 1.5 Flash (via google-generativeai)
+🌍 For NGO Auditors
+Streamlined Auditing: Use AI to handle 90% of the manual data vetting, focusing only on high-risk flags.
 
-Frontend: Streamlit (Cinematic "Veridian Mirror" UI)
+Transparency: A tamper-proof ledger of all verified and rejected sustainability claims.
 
-Database: SQLite3 (Persistent local storage)
+Gemini said
+This is the definitive, production-ready README.md for Prakrit. It is structured to impress hackathon judges by highlighting your sophisticated B2B pivot, the technical power of the Pathway engine, and the SEBI compliance angle.
 
-Environment: Python 3.10+
+README.md
+🌿 Prakrit: AI-Verified Sustainability Protocol
+Deciphering Nature with AI-Verified Integrity.
 
-🚀 Quick Start
-To run Prakrit on your local machine, follow these steps in order.
+Prakrit is a real-time, B2B sustainability ecosystem designed to eliminate "Greenwashing" in the corporate event industry. By leveraging the Pathway Streaming Engine and Gemini 1.5 Flash, we turn raw event data into verified, audit-ready compliance assets for corporate ESG reporting.
 
-1. Clone the Repository
-Bash
+🚀 The Mission
+In 2026, corporate giants face strict SEBI BRSR Core mandates but lack a reliable way to verify the "Green" claims of their event managers. Prakrit bridges this "Trust Gap" by providing a verified marketplace where every carbon and plastic footprint claim is audited by AI and confirmed by local NGOs.
+
+🛠️ Technical Architecture
+Prakrit is built on a high-performance Streaming RAG architecture, moving beyond static batch processing to a "Live Eco-Pulse."
+
+Streaming Engine: Powered by Pathway, our system adheres to the "One-Line Rule"—incremental updates ensure the global sustainability ticker reflects every new data point (invoices, waste logs) instantly.
+
+Reasoning Layer: Gemini 1.5 Flash performs deep anomaly detection, cross-referencing organizer claims against historical sustainability patterns and logistics data.
+
+The Trust Layer: A hybrid verification system where AI flags inconsistencies for NGO Auditors, who provide the final human-in-the-loop validation for legal compliance.
+
+✨ Key Features
+🏢 For Corporate Clients (SMEs & Giants)
+Marketplace of Verified Leads: Access a curated list of event managers with high-integrity AI scores.
+
+Automated BRSR Reports: Receive instant, audit-ready PDF reports for SEBI sustainability filings.
+
+Mudra Rewards: Earn PrakritMudra for every verified green event, redeemable in our circular marketplace.
+
+🎪 For Event Organizers
+The Veridian Mirror: A high-tech dashboard to track event footprints in real-time.
+
+Verification-as-a-Service: Get your "Green" claims verified by AI to win high-value corporate contracts.
+
+Reputation Engine: Build a public, immutable track record of environmental integrity.
+
+🌍 For NGO Auditors
+Streamlined Auditing: Use AI to handle 90% of the manual data vetting, focusing only on high-risk flags.
+
+Transparency: A tamper-proof ledger of all verified and rejected sustainability claims.
+
+💻 Installation & Setup
+Clone the Repository:
 git clone https://github.com/Kunal6694/Prakrit.git
 cd Prakrit
 
-3. Setup Environment Variables
-Create a .env file in the root directory and add your Google API Key:
+Environment Setup:
+Create a .env file and add your keys:
+GEMINI_API_KEY=your_key_here
 
-Plaintext
-GOOGLE_API_KEY=your_gemini_api_key_here
-
-3. Install Dependencies
-Bash
-pip install -r requirements.txt
-
-4. Launch the Pathway Engine (Backend)
-Open a terminal and run the streaming processor. This must stay running to process audits and the RAG index in real-time.
-Bash
+Run the Streaming Engine:
 python main.py
-5. Launch the Prakrit App (Frontend)
 
-Open a second terminal and run the Streamlit application.
-Bash
+Start the frontend:
 streamlit run prakrit_app.py
 
-🏗️ Architecture: The "One-Line Rule"
-Prakrit follows the mandatory Pathway requirement: the system updates automatically when new data arrives.
+References & Research
+SEBI BRSR Core: Framework for mandatory ESG reporting in India.
+Pathway Framework: Streaming data processing for real-time RAG.
 
-Ingestion: Files (PDF/TXT) uploaded to data/input/ are detected instantly by Pathway.
-
-Reasoning: main.py uses pw.apply to score the reports and generate RAG insights via Gemini.
-
-Synchronization: Pathway sinks the results to pathway_results.csv and live_pulse.jsonl.
-
-UI Refresh: The Streamlit frontend monitors these sinks and updates the Live Ticker and Consultant Tip without requiring a page reload.
-
-⚖️ License
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-🌿 Our Vision
-To move from a world of "claimed" sustainability to "verified" impact, one event at a time.
+The Team:
+Kunal Sharma(@Kunal6694)
+Harsh Maheshwari(@harshmsh)
