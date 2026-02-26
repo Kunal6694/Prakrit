@@ -16,6 +16,9 @@ Reasoning Layer: Gemini 2.5 Flash performs deep anomaly detection, cross-referen
 The Trust Layer: A hybrid verification system where AI flags inconsistencies for NGO Auditors, who provide the final human-in-the-loop validation for legal compliance.
 
 ✨ Key Features
+
+Prakrit ID (PID): A unique primary key assigned at registration that serves as the "Single Source of Truth," linking all invoices, audit logs, and Mudra transactions to a verified entity
+
 🏢 For Corporate Clients (SMEs & Giants)
 Marketplace of Verified Leads: Access a curated list of event managers with high-integrity AI scores.
 
