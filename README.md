@@ -35,6 +35,10 @@ Streamlined Auditing: Use AI to handle 90% of the manual data vetting, focusing 
 
 Transparency: A tamper-proof ledger of all verified and rejected sustainability claims.
 
+WorkFlow:
+<img width="1066" height="602" alt="image" src="https://github.com/user-attachments/assets/c43e3df6-5cee-44d7-985e-5746b56a6adb" />
+
+
 💻 Installation & Setup
 Clone the Repository:
 git clone https://github.com/Kunal6694/Prakrit.git
@@ -57,3 +61,4 @@ Pathway Framework: Streaming data processing for real-time RAG.
 The Team:
 Kunal Sharma(@Kunal6694)
 Harsh Maheshwari(@harshmsh)
+
